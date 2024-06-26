@@ -1,17 +1,5 @@
-const mysql = require('mysql2/promise');
-const dotenv = require('dotenv');
+const db = require('../config/db');
 const { v4: uuidv4 } = require('uuid'); // Import the UUID v4 generator
-
-dotenv.config();
-
-const db = mysql.createPool({
-  host: process.env.DB_HOST,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_DATABASE,
-  port: process.env.DB_PORT || 3306,
-  ssl: process.env.DB_SSL === 'true' ? { rejectUnauthorized: false } : false,
-});
 
 async function getBorrowerByID(BorrowerID) {
     const query = `SELECT * FROM Borrower WHERE BorrowerID = ?`;
@@ -34,7 +22,7 @@ const addBorrower = async (req, res) => {
     `;
     try {
         await db.query(query, [BorrowerID, FirstName, LastName, Gender, MaritalStatus, DateOfBirth, PhoneNumber, Email, Occupation, Address, Role]);
-        return getBorrowerByID(BorrowerID); // Return the newly added borrower
+        return BorrowerID; // Return the UUID of the newly added borrower
     } catch (err) {
         console.error("Error executing query:", err);
         throw err;
