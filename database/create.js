@@ -1,8 +1,19 @@
 const db = require("../config/db");
 
+const createUsersTable = `
+    CREATE TABLE IF NOT EXISTS Users (
+        UserID CHAR(36) PRIMARY KEY,
+        Email VARCHAR(100) NOT NULL,
+        Role ENUM('Borrower', 'Lender') NOT NULL,
+        CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        UNIQUE(Email, Role)
+    )
+`;
+
 const createBorrowerTable = `
     CREATE TABLE IF NOT EXISTS Borrower (
-        BorrowerID CHAR(36) PRIMARY KEY,
+        BorrowerID CHAR(36) PRIMARY KEY NOT NULL,
+        UserID CHAR(36) NOT NULL,
         FirstName VARCHAR(50) NOT NULL,
         LastName VARCHAR(50) NOT NULL,
         Gender VARCHAR(10) NOT NULL,
@@ -12,8 +23,28 @@ const createBorrowerTable = `
         Email VARCHAR(100) NOT NULL,
         Occupation VARCHAR(15) NOT NULL,
         Address VARCHAR(255) NOT NULL,
-        Role VARCHAR(15) NOT NULL,
-        CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        Role ENUM('Borrower', 'Lender') NOT NULL,
+        CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (UserID) REFERENCES Users(UserID) ON DELETE CASCADE ON UPDATE CASCADE
+    )
+`;
+
+const createLenderTable= `
+    CREATE TABLE IF NOT EXISTS Lender (
+        LenderID CHAR(36) PRIMARY KEY NOT NULL,
+        UserID CHAR(36) NOT NULL,
+        FirstName VARCHAR(50) NOT NULL,
+        LastName VARCHAR(50) NOT NULL,
+        Gender VARCHAR(10) NOT NULL,
+        MaritalStatus VARCHAR(15) NOT NULL,
+        DateOfBirth DATE NOT NULL,
+        PhoneNumber VARCHAR(15) NOT NULL,
+        Email VARCHAR(100) NOT NULL,
+        Occupation VARCHAR(15) NOT NULL,
+        Address VARCHAR(255) NOT NULL,
+        Role ENUM('Borrower', 'Lender') NOT NULL,
+        CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (UserID) REFERENCES Users(UserID) ON DELETE CASCADE ON UPDATE CASCADE
     )
 `;
 
@@ -24,9 +55,10 @@ const createKYCTable = `
         PANNumber VARCHAR(50) NOT NULL,
         BankAccountNumber VARCHAR(50) NOT NULL,
         CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY (UserID) REFERENCES Borrower (BorrowerID)
+        FOREIGN KEY (UserID) REFERENCES Users(UserID) ON DELETE CASCADE ON UPDATE CASCADE
     )
 `;
+
 
 const createVerificationTable = `
     CREATE TABLE IF NOT EXISTS Verification (
@@ -45,25 +77,8 @@ const createVerificationTable = `
     )
 `;
 
-const createLenderTable= `
-    CREATE TABLE IF NOT EXISTS Lender (
-        LenderID CHAR(36) PRIMARY KEY,
-        FirstName VARCHAR(50) NOT NULL,
-        LastName VARCHAR(50) NOT NULL,
-        Gender VARCHAR(10) NOT NULL,
-        MaritalStatus VARCHAR(15) NOT NULL,
-        DateOfBirth DATE NOT NULL,
-        PhoneNumber VARCHAR(15) NOT NULL,
-        Email VARCHAR(100) NOT NULL,
-        Occupation VARCHAR(15) NOT NULL,
-        Address VARCHAR(255) NOT NULL,
-        Role VARCHAR(15) NOT NULL,
-        CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    )
-`;
-
 const createLoan_RequestTable= `
-    CREATE TABLE Loan_Request (
+    CREATE TABLE IF NOT EXISTS Loan_Request (
         LoanRequestID INT AUTO_INCREMENT PRIMARY KEY,
         BorrowerID CHAR(36),
         Tenure INT NOT NULL, -- in months
@@ -78,7 +93,7 @@ const createLoan_RequestTable= `
 
 
 const createLoanTable= `
-    CREATE TABLE Loan (
+    CREATE TABLE IF NOT EXISTS Loan (
         LoanID INT AUTO_INCREMENT PRIMARY KEY,
         BorrowerID CHAR(36),
         LenderID CHAR(36),
@@ -97,7 +112,7 @@ const createLoanTable= `
 `;
 
 const createPaymentTable= `
-    CREATE TABLE Payment (
+    CREATE TABLE IF NOT EXISTS Payment (
         BlockchainTransactionID VARCHAR(255) PRIMARY KEY,
         LoanID INT,
         PaymentAmount DECIMAL(10, 2) NOT NULL,
@@ -108,7 +123,7 @@ const createPaymentTable= `
 `;
 
 const createLoanScheduleTable= `
-    CREATE TABLE LoanSchedule (
+    CREATE TABLE IF NOT EXISTS LoanSchedule (
         ScheduleID INT AUTO_INCREMENT PRIMARY KEY,
         LoanID INT,
         DueDate DATE NOT NULL,
@@ -123,14 +138,17 @@ const createLoanScheduleTable= `
 
 async function createTables() {
     try {
+        await db.query(createUsersTable);
+        console.log("Created Users table");
+        
         await db.query(createBorrowerTable);
         console.log("Created Borrower table");
-
-        await db.query(createKYCTable);
-        console.log("Created KYC table");
         
         await db.query(createLenderTable);
         console.log("Created Lender table");
+
+        await db.query(createKYCTable);
+        console.log("Created KYC table");
         
         await db.query(createLoanTable);
         console.log("Created Loan table");

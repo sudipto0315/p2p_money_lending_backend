@@ -6,13 +6,15 @@ const rateLimit = require('express-rate-limit');
 const borrowerRoutes = require('./routes/BorrowerRoutes');
 const kycRoutes = require('./routes/KYCRoutes');
 const testdataRoutes = require('./routes/testdataRoutes');
+const LenderRoutes = require('./routes/LenderRoutes');
+const userRoutes = require('./routes/UserRoutes')
 
 dotenv.config();
 
 const app = express();
 
 // Trust the proxy to correctly handle X-Forwarded-For header
-app.set('trust proxy', true);
+// app.set('trust proxy', true);
 
 // Security enhancements
 app.use(helmet());
@@ -32,6 +34,8 @@ app.use(limiter);
 app.use('/testdata',testdataRoutes);
 app.use('/borrower', borrowerRoutes);
 app.use('/kyc', kycRoutes);
+app.use('/lender', LenderRoutes);
+app.use('/user', userRoutes);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server is running on port http://localhost:${PORT}`));

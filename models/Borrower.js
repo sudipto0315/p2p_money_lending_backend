@@ -14,15 +14,15 @@ async function getBorrowerByID(BorrowerID) {
 
 const addBorrower = async (req, res) => {
     const BorrowerID = uuidv4(); // Generate a new UUID for the borrower
-    const { FirstName, LastName, Gender, MaritalStatus, DateOfBirth, PhoneNumber, Email, Occupation, Address, Role } = req.body;
+    const { UserID, FirstName, LastName, Gender, MaritalStatus, DateOfBirth, PhoneNumber, Email, Occupation, Address, Role } = req.body;
   
     const query = `
-        INSERT INTO Borrower (BorrowerID, FirstName, LastName, Gender, MaritalStatus, DateOfBirth, PhoneNumber, Email, Occupation, Address, Role) 
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        INSERT INTO Borrower (BorrowerID, UserID, FirstName, LastName, Gender, MaritalStatus, DateOfBirth, PhoneNumber, Email, Occupation, Address, Role) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
     try {
-        await db.query(query, [BorrowerID, FirstName, LastName, Gender, MaritalStatus, DateOfBirth, PhoneNumber, Email, Occupation, Address, Role]);
-        return BorrowerID; // Return the UUID of the newly added borrower
+        await db.query(query, [BorrowerID, UserID, FirstName, LastName, Gender, MaritalStatus, DateOfBirth, PhoneNumber, Email, Occupation, Address, Role]);
+        return BorrowerID; // Return the UUID of the newly added borrower if needed
     } catch (err) {
         console.error("Error executing query:", err);
         throw err;

@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { addBorrower } = require('../models/Borrower');
+const { addBorrower, getBorrowerByID} = require('../models/Borrower');
 const authenticate = require('../middleware/authenticate');
 
 router.post('/add', authenticate, async (req, res) => {
@@ -9,6 +9,16 @@ router.post('/add', authenticate, async (req, res) => {
     res.status(201).json({BorrowerID: newBorrower});
   } catch (err) {
     console.error("Error adding borrower:", err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+router.get('/:id', authenticate, async (req, res) => {
+  try {
+    const lender = await getBorrowerByID(req.params.id);
+    res.json(lender);
+  } catch (err) {
+    console.error("Error getting lender:", err);
     res.status(500).json({ error: 'Internal server error' });
   }
 });

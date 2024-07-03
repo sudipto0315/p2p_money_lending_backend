@@ -12,16 +12,16 @@ async function getKYCByUserID(BorrowerID) {
     }
 }
 
-const addKYC = async (req, BorrowerID) => {
+const addKYC = async (req, UserID) => {
     const { AadhaarNumber, PANNumber, BankAccountNumber } = req.body;
 
     const query = `
-        INSERT INTO KYC (UserID, AadhaarNumber, PANNumber, BankAccountNumber) 
+        INSERT INTO KYC (UserID, AadhaarNumber, PANNumber, BankAccountNumber)
         VALUES (?, ?, ?, ?)
     `;
     try {
-        await db.query(query, [BorrowerID, AadhaarNumber, PANNumber, BankAccountNumber]);
-        return getKYCByUserID(BorrowerID); // Return the newly added KYC
+        await db.query(query, [UserID, AadhaarNumber, PANNumber, BankAccountNumber]);
+        return getKYCByUserID(UserID); // Return the newly added KYC
     } catch (err) {
         console.error("Error executing query:", err);
         throw err;
