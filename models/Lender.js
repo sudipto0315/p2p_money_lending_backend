@@ -22,7 +22,7 @@ const addLender = async (req, res) => {
     `;
     try {
         await db.query(query, [LenderID, UserID, FirstName, LastName, Gender, MaritalStatus, DateOfBirth, PhoneNumber, Email, Occupation, Address, Role]);
-        return LenderID; // Return the UUID of the newly added lender
+        return LenderID; // Return the UUI`D of the newly added lender
     } catch (err) {
         console.error("Error executing query:", err);
         throw err;

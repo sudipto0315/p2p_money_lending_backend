@@ -13,12 +13,15 @@ router.post('/add', authenticate, async (req, res) => {
   }
 });
 
-router.get('/:id', authenticate, async (req, res) => {
+router.get('/getBorrowerIDWithUserID/:id', authenticate, async (req, res) => {
   try {
-    const lender = await getBorrowerByID(req.params.id);
-    res.json(lender);
+    const borrowerID = await getBorrowerByID(req.params.id);
+    if(!borrowerID){
+      return res.status(404).json({ error: 'Borrower not found' });
+    }
+    res.json(borrowerID);
   } catch (err) {
-    console.error("Error getting lender:", err);
+    console.error("Error getting borrowerID:", err);
     res.status(500).json({ error: 'Internal server error' });
   }
 });

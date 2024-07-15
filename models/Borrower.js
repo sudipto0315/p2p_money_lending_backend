@@ -1,11 +1,11 @@
 const db = require('../config/db');
 const { v4: uuidv4 } = require('uuid'); // Import the UUID v4 generator
 
-async function getBorrowerByID(BorrowerID) {
-    const query = `SELECT * FROM Borrower WHERE BorrowerID = ?`;
+async function getBorrowerByID(UserID) {
+    const query = `SELECT BorrowerID FROM Borrower WHERE UserID = ?`;
     try {
-        const [rows] = await db.query(query, [BorrowerID]);
-        return rows[0]; // Assuming there is only one Borrower with the given BorrowerID
+        const [rows] = await db.query(query, [UserID]);
+        return rows[0]; // Assuming there is only one Borrower with the given UserID
     } catch (err) {
         console.error("Error executing query:", err);
         throw err;

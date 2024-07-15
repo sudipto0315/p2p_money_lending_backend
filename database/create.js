@@ -79,12 +79,13 @@ const createVerificationTable = `
 
 const createLoan_RequestTable= `
     CREATE TABLE IF NOT EXISTS Loan_Request (
-        LoanRequestID INT AUTO_INCREMENT PRIMARY KEY,
+        LoanRequestID CHAR(36) PRIMARY KEY NOT NULL,
         BorrowerID CHAR(36),
+        LoanType ENUM('Personal Loan', 'Medical Loan', 'Education Loan', 'Agricultue/Business Loan', 'House Loan') NOT NULL DEFAULT 'Personal Loan',
         Tenure INT NOT NULL, -- in months
         Amount DECIMAL(10, 2) NOT NULL,
         Description TEXT,
-        CreditScore INT NOT NULL,
+        CreditScore FLOAT NOT NULL DEFAULT 7.1,
         CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         Status ENUM('Pending', 'Approved', 'Rejected') DEFAULT 'Pending',
         FOREIGN KEY (BorrowerID) REFERENCES Borrower(BorrowerID)
@@ -94,7 +95,7 @@ const createLoan_RequestTable= `
 
 const createLoanTable= `
     CREATE TABLE IF NOT EXISTS Loan (
-        LoanID INT AUTO_INCREMENT PRIMARY KEY,
+        LoanID CHAR(36) PRIMARY KEY NOT NULL,
         BorrowerID CHAR(36),
         LenderID CHAR(36),
         Amount DECIMAL(10, 2) NOT NULL,
@@ -114,7 +115,7 @@ const createLoanTable= `
 const createPaymentTable= `
     CREATE TABLE IF NOT EXISTS Payment (
         BlockchainTransactionID VARCHAR(255) PRIMARY KEY,
-        LoanID INT,
+        LoanID CHAR(36),
         PaymentAmount DECIMAL(10, 2) NOT NULL,
         PaymentDate DATE NOT NULL,
         CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -124,8 +125,8 @@ const createPaymentTable= `
 
 const createLoanScheduleTable= `
     CREATE TABLE IF NOT EXISTS LoanSchedule (
-        ScheduleID INT AUTO_INCREMENT PRIMARY KEY,
-        LoanID INT,
+        ScheduleID CHAR(36) PRIMARY KEY NOT NULL,
+        LoanID CHAR(36),
         DueDate DATE NOT NULL,
         PaymentAmount DECIMAL(10, 2) NOT NULL,
         NextRepaymentDate DATE NOT NULL,
